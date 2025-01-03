@@ -159,7 +159,6 @@ api.post('/uploadFile', async (c) => {
     let imageUrl = '';
     if (imageFile instanceof File) { 
       const key = `${new Date().getTime()}-${imageFile.name}`;
-      console.log(key+"===========")
       const fileBuffer = await imageFile.arrayBuffer();
       await c.env.hono.put(key, fileBuffer, {
         httpMetadata: {
