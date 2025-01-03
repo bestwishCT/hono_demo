@@ -6,6 +6,7 @@ import { getFormDataValue, getFormDataNumber } from './utils/formData'
 import type { FC } from 'hono/jsx'
 import type { Employee } from './db'
 import { updateEmployee, findAllEmployees,createEmployee,deleteEmployee } from './db'
+import { sign,decode,verify} from 'hono/jwt'
 
 const api = new Hono<{ Bindings: Bindings }>()
 api.use('/posts/*', cors())
@@ -59,14 +60,14 @@ api.delete('/posts/:id', async (c) => {
     const success = await model.deletePost(c.env.BLOG_EXAMPLE, id)
     return c.json({ ok: success })
 })
-
+//========================d1 CRUD、Auth==================================
 //d1 query
-api.get('/employee', async (c) => {
+api.get('/auth/employee', async (c) => {
     const locations = await findAllEmployees(c.env.DB)
     return c.json({ locations: locations, ok: true })
 })
 //d1 add
-api.post('/employee', async (c) => {
+api.post('/auth/employee', async (c) => {
     // const param = await c.req.json()
     const formData = await c.req.formData();
     const employeeData: Employee = {
@@ -89,7 +90,7 @@ api.post('/employee', async (c) => {
 })
 
 //d1 edit
-api.put('/employee/:employeeId', async (c) => {
+api.put('/auth/employee/:employeeId', async (c) => {
     const { employeeId } = c.req.param();
     const updatedEmployee = await c.req.json();
     const updateFlag = await updateEmployee(c.env.DB,employeeId,updatedEmployee)
@@ -100,7 +101,7 @@ api.put('/employee/:employeeId', async (c) => {
 })
 
 //d1 delete
-api.delete('/employee/:employeeId', async (c) => {
+api.delete('/auth/employee/:employeeId', async (c) => {
     const { employeeId } = c.req.param();
     const deleteFlag = await deleteEmployee(c.env.DB, employeeId);
     if (!deleteFlag) {
@@ -108,4 +109,43 @@ api.delete('/employee/:employeeId', async (c) => {
     }
     return c.json({ ok: true }, 201);
   });
+//token
+api.post('/login', async (c) => {
+    const payload = {
+        sub: 'admin',
+        role: 'admin',
+        exp: Math.floor(Date.now() / 1000) + 60 * 1, // Token expires in 5 minutes
+      }
+      const secret = 'mySecretKey'
+      const token = await sign(payload, secret)
+    return c.json({ token: token, ok: true }, 201)
+})
+
+//token
+api.get('/parseToken', async (c) => {
+    const tokenToDecode = c.req.query('token')
+    if (!tokenToDecode) {
+      return c.json({ error: 'Token is required', ok: false }, 400)
+    }
+    const { header, payload } = decode(tokenToDecode)
+    if (!header || !payload) {
+      return c.json({ error: 'Invalid token', ok: false }, 400)
+    }
+    console.log('Decoded Header:', header)
+    console.log('Decoded Payload:', payload)
+    return c.json({ header, payload, ok: true })
+  })
+  
+  //verify()
+api.get('/verify', async (c) => {
+    const tokenToDecode = c.req.query('token')
+    if (!tokenToDecode) {
+        return c.json({ error: 'Token is required', ok: false }, 400)
+    }
+    const secret = 'mySecretKey'
+    const decodedPayload = await verify(tokenToDecode, secret)
+    console.log(decodedPayload)
+    return c.json({ decodedPayload, ok: true })
+  })
+
 export default api

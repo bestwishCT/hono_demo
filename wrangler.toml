@@ -4,7 +4,7 @@ compatibility_date = "2024-04-01"
 compatibility_flags = ['nodejs_compat']
 
 kv_namespaces = [
-  { binding = "BLOG_EXAMPLE", preview_id = "your-id", id = "your-id" }
+  { binding = "hono_kv_demo", preview_id = "eaa9b2c1c70c4798a883b6e73d4b4895", id = "eaa9b2c1c70c4798a883b6e73d4b4895" }
 ]
 
 [[d1_databases]]
