@@ -22,5 +22,4 @@ middleware.use('/auth/*',
   }))
 app.route('/api', middleware)
 app.route('/api', api)
-
 export default app

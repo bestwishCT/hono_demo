@@ -16,13 +16,13 @@ api.get('/', (c) => {
 })
 
 api.get('/posts', async (c) => {
-    const posts = await model.getPosts(c.env.BLOG_EXAMPLE)
+    const posts = await model.getPosts(c.env.hono_kv_demo)
     return c.json({ posts: posts, ok: true })
 })
 
 api.post('/posts', async (c) => {
     const param = await c.req.json()
-    const newPost = await model.createPost(c.env.BLOG_EXAMPLE, param as model.Param)
+    const newPost = await model.createPost(c.env.hono_kv_demo, param as model.Param)
     if (!newPost) {
         return c.json({ error: 'Can not create new post', ok: false }, 422)
     }
@@ -31,7 +31,7 @@ api.post('/posts', async (c) => {
 
 api.get('/posts/:id', async (c) => {
     const id = c.req.param('id')
-    const post = await model.getPost(c.env.BLOG_EXAMPLE, id)
+    const post = await model.getPost(c.env.hono_kv_demo, id)
     if (!post) {
         return c.json({ error: 'Not Found', ok: false }, 404)
     }
@@ -40,27 +40,27 @@ api.get('/posts/:id', async (c) => {
 
 api.put('/posts/:id', async (c) => {
     const id = c.req.param('id')
-    const post = await model.getPost(c.env.BLOG_EXAMPLE, id)
+    const post = await model.getPost(c.env.hono_kv_demo, id)
     if (!post) {
         // 204 No Content
         return new Response(null, { status: 204 })
     }
     const param = await c.req.json()
-    const success = await model.updatePost(c.env.BLOG_EXAMPLE, id, param as model.Param)
+    const success = await model.updatePost(c.env.hono_kv_demo, id, param as model.Param)
     return c.json({ ok: success })
 })
 
 api.delete('/posts/:id', async (c) => {
     const id = c.req.param('id')
-    const post = await model.getPost(c.env.BLOG_EXAMPLE, id)
+    const post = await model.getPost(c.env.hono_kv_demo, id)
     if (!post) {
         // 204 No Content
         return new Response(null, { status: 204 })
     }
-    const success = await model.deletePost(c.env.BLOG_EXAMPLE, id)
+    const success = await model.deletePost(c.env.hono_kv_demo, id)
     return c.json({ ok: success })
 })
-//========================d1 CRUD、Auth==================================
+//========================d1 CRUD、JWT Auth==================================
 //d1 query
 api.get('/auth/employee', async (c) => {
     const locations = await findAllEmployees(c.env.DB)
@@ -109,19 +109,22 @@ api.delete('/auth/employee/:employeeId', async (c) => {
     }
     return c.json({ ok: true }, 201);
   });
-//token
+//login
 api.post('/login', async (c) => {
     const payload = {
         sub: 'admin',
         role: 'admin',
-        exp: Math.floor(Date.now() / 1000) + 60 * 1, // Token expires in 5 minutes
+        exp: Math.floor(Date.now() / 1000) + 60 * 10, // Token expires in 5 minutes
       }
       const secret = 'mySecretKey'
       const token = await sign(payload, secret)
+      //kv
+      await c.env.hono_kv_demo.put("admin_token", token);
+      let value = await c.env.hono_kv_demo.get("admin_token");
     return c.json({ token: token, ok: true }, 201)
 })
 
-//token
+//parse token
 api.get('/parseToken', async (c) => {
     const tokenToDecode = c.req.query('token')
     if (!tokenToDecode) {
@@ -136,7 +139,7 @@ api.get('/parseToken', async (c) => {
     return c.json({ header, payload, ok: true })
   })
   
-  //verify()
+  //token verify
 api.get('/verify', async (c) => {
     const tokenToDecode = c.req.query('token')
     if (!tokenToDecode) {
