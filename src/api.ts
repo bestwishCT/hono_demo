@@ -5,7 +5,7 @@ import * as model from './model'
 import { getFormDataValue, getFormDataNumber } from './utils/formData'
 import type { FC } from 'hono/jsx'
 import type { Employee } from './db'
-import { findAllEmployees, findAllDepartments, findAllLocations,createEmployee } from './db'
+import { updateEmployee, findAllEmployees,createEmployee,deleteEmployee } from './db'
 
 const api = new Hono<{ Bindings: Bindings }>()
 api.use('/posts/*', cors())
@@ -61,8 +61,8 @@ api.delete('/posts/:id', async (c) => {
 })
 
 //d1 query
-api.get('/locations', async (c) => {
-    const locations = await findAllLocations(c.env.DB)
+api.get('/employee', async (c) => {
+    const locations = await findAllEmployees(c.env.DB)
     return c.json({ locations: locations, ok: true })
 })
 //d1 add
@@ -88,4 +88,24 @@ api.post('/employee', async (c) => {
     return c.json({ employee: newEmployee, ok: true }, 201)
 })
 
+//d1 edit
+api.put('/employee/:employeeId', async (c) => {
+    const { employeeId } = c.req.param();
+    const updatedEmployee = await c.req.json();
+    const updateFlag = await updateEmployee(c.env.DB,employeeId,updatedEmployee)
+    if (!updateFlag) {
+        return c.json({ error: 'Can not update employee', ok: false }, 422)
+    }
+    return c.json({ok: true }, 201)
+})
+
+//d1 delete
+api.delete('/employee/:employeeId', async (c) => {
+    const { employeeId } = c.req.param();
+    const deleteFlag = await deleteEmployee(c.env.DB, employeeId);
+    if (!deleteFlag) {
+      return c.json({ error: 'Employee not found or cannot be deleted', ok: false }, 404);
+    }
+    return c.json({ ok: true }, 201);
+  });
 export default api

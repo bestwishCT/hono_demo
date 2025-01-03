@@ -66,3 +66,32 @@ export const findAllDepartments = async (db: D1Database) => {
   const locations = results;
   return locations;
 };
+
+export const updateEmployee = async (
+  db: D1Database,
+  employeeId: string,
+  updatedEmployee: Partial<Employee>
+) => {
+  const updateFields: string[] = [];
+  const values: any[] = [];
+
+  if (updatedEmployee.name) {
+    updateFields.push('name = ?');
+    values.push(updatedEmployee.name);
+  }
+
+  const query = `
+    UPDATE employees
+    SET ${updateFields.join(', ')}
+    WHERE employee_id = ?
+  `;
+  values.push(employeeId);
+  const results = await db.prepare(query).bind(...values).run();
+  return results;
+};
+
+export const deleteEmployee = async (db: D1Database, employeeId: string) => {
+  const query = `DELETE FROM employees WHERE employee_id = ?`;
+  const result = await db.prepare(query).bind(employeeId).run();
+  return result.success;
+};

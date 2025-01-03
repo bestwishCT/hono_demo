@@ -12,6 +12,7 @@ app.notFound((c) => c.json({ message: 'Not Found', ok: false }, 404))
 
 const middleware = new Hono<{ Bindings: Bindings }>()
 middleware.use('*', prettyJSON())
+// 鉴权 Bearer Auth Middleware
 middleware.use('*', bearerAuth({ token }))
 app.route('/api', middleware)
 app.route('/api', api)
