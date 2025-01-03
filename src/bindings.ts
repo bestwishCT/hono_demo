@@ -4,6 +4,6 @@ export type Bindings = {
     PASSWORD: string
     hono_kv_demo: KVNamespace
     DB: D1Database
-    MY_BUCKET: R2Bucket
+    hono: R2Bucket
 }
 

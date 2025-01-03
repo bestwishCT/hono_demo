@@ -114,7 +114,7 @@ api.post('/login', async (c) => {
     const payload = {
         sub: 'admin',
         role: 'admin',
-        exp: Math.floor(Date.now() / 1000) + 60 * 10, // Token expires in 5 minutes
+        exp: Math.floor(Date.now() / 1000) + 60 * 10, // Token expires in 10 minutes
       }
       const secret = 'mySecretKey'
       const token = await sign(payload, secret)
@@ -151,4 +151,24 @@ api.get('/verify', async (c) => {
     return c.json({ decodedPayload, ok: true })
   })
 
+    // uploadFile
+api.post('/uploadFile', async (c) => {
+    const formData = await c.req.formData();
+    console.log(formData)
+    const imageFile = formData.get('image_file');
+    let imageUrl = '';
+    if (imageFile instanceof File) { 
+      const key = `${new Date().getTime()}-${imageFile.name}`;
+      console.log(key+"===========")
+      const fileBuffer = await imageFile.arrayBuffer();
+      await c.env.hono.put(key, fileBuffer, {
+        httpMetadata: {
+          contentType: imageFile.type || 'application/octet-stream',
+        },
+      });
+      console.log(`File uploaded successfully: ${key}`);
+      imageUrl = `https://pub-a4f4e5ec65f24061956b560179a5a794.r2.dev/${key}`;
+    }
+    return c.json({ msg:"File uploaded successfully", ok: true })
+  })
 export default api

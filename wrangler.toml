@@ -3,6 +3,10 @@ name = "hono_demo"
 compatibility_date = "2024-04-01"
 compatibility_flags = ['nodejs_compat']
 
+[[r2_buckets]]
+bucket_name = "hono"
+binding = "hono"
+
 [[kv_namespaces]]
 binding = "hono_kv_demo"
 id = "ca4b064ef936455db1ba09a9451d9f04"
