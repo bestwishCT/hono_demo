@@ -130,3 +130,25 @@ export const findSearchEngines = async (db: D1Database, page: number, pageSize: 
   const { results } = await db.prepare(query).bind(pageSize, offset).all();
   return results;
 };
+
+// 查找单个引擎
+export const findSearchEngineById = async (db: D1Database, id: string) => {
+  const query = `SELECT * FROM search_engine WHERE id = ? AND status = 1`;
+  const result = await db.prepare(query).bind(id).first();
+  return result;
+};
+
+// 更新引擎
+export const updateSearchEngine = async (db: D1Database, id: string, updatedData: { name: string, status: number }) => {
+  const { name, status } = updatedData;
+  const query = `UPDATE search_engine SET name = ?, status = ? WHERE id = ?`;
+  const result   = await db.prepare(query).bind(name, status, id).run();
+  return result.success;
+};
+
+// 删除引擎
+export const deleteSearchEngine = async (db: D1Database, id: string) => {
+  const query = `DELETE FROM search_engine WHERE id = ?`;
+  const result = await db.prepare(query).bind(id).run();
+  return result.success;
+};
