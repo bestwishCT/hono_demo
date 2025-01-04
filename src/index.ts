@@ -11,6 +11,7 @@ import { html, raw } from 'hono/html'
 const app = new Hono()
 const token = 'honoiscool'
 // app.get('/', (c) => c.text('Pretty Hono Demo Web API'))
+app.get('/', (c) => c.redirect('/api/auth/engineList'))
 app.get('/:username', (c) => {
     const { username } = c.req.param()
     return c.html(
