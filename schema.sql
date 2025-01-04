@@ -43,3 +43,11 @@ CREATE TABLE employees (
     location_id INTEGER REFERENCES locations(location_id),
     department_id INTEGER REFERENCES departments(department_id)
 );
+
+CREATE TABLE search_engine (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    created_date bigint,
+    status tinyint
+);

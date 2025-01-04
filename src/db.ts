@@ -95,3 +95,38 @@ export const deleteEmployee = async (db: D1Database, employeeId: string) => {
   const result = await db.prepare(query).bind(employeeId).run();
   return result.success;
 };
+
+// 搜索引擎
+export type SearchEngine = {
+  name: string;
+  image_url: string;
+  created_date: number;
+  status: number;
+};
+// 添加搜索引擎
+export const createSearchEngine = async (
+  db: D1Database,
+  engine: SearchEngine
+) => {
+  const query = `
+      INSERT INTO search_engine (name, image_url, created_date, status)
+      VALUES (?, ?, ?, ?)`;
+
+  const results  = await db
+    .prepare(query)
+    .bind(engine.name,engine.image_url, engine.created_date, engine.status)
+    .run();
+  const engines = results;
+  return engines;
+};
+
+//查询搜索引擎列表
+export const findSearchEngines = async (db: D1Database, page: number, pageSize: number) => {
+  const offset = (page - 1) * pageSize;
+  const query = `
+      SELECT * FROM search_engine WHERE status = 1
+      LIMIT ? OFFSET ?
+  `;
+  const { results } = await db.prepare(query).bind(pageSize, offset).all();
+  return results;
+};

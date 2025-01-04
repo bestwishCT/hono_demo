@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import { prettyJSON } from 'hono/pretty-json'
 import api from './api'
+import handler from './handler/handler'
 import { Bindings } from './bindings'
 import { jwt } from 'hono/jwt'
 
@@ -16,10 +17,12 @@ middleware.use('*', prettyJSON())
 // Bearer Auth Middleware
 // middleware.use('/employee/*', bearerAuth({ token }))
 //jwt鉴权
-middleware.use('/auth/*',
-  jwt({
-    secret: 'mySecretKey',
-  }))
+// 调试暂时去掉
+// middleware.use('/auth/*',
+//   jwt({
+//     secret: 'mySecretKey',
+//   }))
 app.route('/api', middleware)
 app.route('/api', api)
+app.route('/api', handler)
 export default app
