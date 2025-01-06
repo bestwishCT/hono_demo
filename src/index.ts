@@ -54,15 +54,16 @@ export default {
         switch (controller.cron) {
             case "*/1 * * * *":
                 // Every minutes
-                console.log("cron processed 1 minutes ***");
-                const pointData = await findPointData(env.DB);
-                if (pointData && pointData.length > 0) {
-                    pointData.forEach((point: any) => {
-                        console.log(`Point Body: ${point.body}`);
-                    });
-                } else {
-                    console.log("No points found");
-                }
+                // 测试阶段暂时去掉
+                // console.log("cron processed 1 minutes ***");
+                // const pointData = await findPointData(env.DB);
+                // if (pointData && pointData.length > 0) {
+                //     pointData.forEach((point: any) => {
+                //         console.log(`Point Body: ${point.body}`);
+                //     });
+                // } else {
+                //     console.log("No points found");
+                // }
                 break;
             case "*/10 * * * *":
                 // Every ten minutes

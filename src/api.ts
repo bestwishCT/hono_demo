@@ -7,6 +7,7 @@ import type { FC } from 'hono/jsx'
 import type { Employee } from './db'
 import { updateEmployee, findAllEmployees,createEmployee,deleteEmployee } from './db'
 import { sign,decode,verify} from 'hono/jwt'
+import { R2_URL } from './utils/constants';
 
 const api = new Hono<{ Bindings: Bindings }>()
 // KV
@@ -111,20 +112,26 @@ api.delete('/auth/employee/:employeeId', async (c) => {
     }
     return c.json({ ok: true }, 201);
   });
-//login
+//login（模拟登录）
 api.post('/login', async (c) => {
+  const { username, password } = await c.req.json();
+  const validUsername = 'admin';
+  const validPassword = 'admin123';
+  if (username === validUsername && password === validPassword) {
     const payload = {
-        sub: 'admin',
-        role: 'admin',
-        exp: Math.floor(Date.now() / 1000) + 60 * 10, // Token expires in 10 minutes
-      }
-      const secret = 'mySecretKey'
-      const token = await sign(payload, secret)
-      //kv
-      await c.env.hono_kv_demo.put("admin_token", token);
-      let value = await c.env.hono_kv_demo.get("admin_token");
-    return c.json({ token: token, ok: true }, 201)
-})
+      sub: 'admin',
+      role: 'admin',
+      exp: Math.floor(Date.now() / 1000) + 60 * 10, // Token expires in 10 minutes
+    };
+    const secret = 'mySecretKey';
+    const token = await sign(payload, secret);
+    await c.env.hono_kv_demo.put("admin_token", token);
+    let value = await c.env.hono_kv_demo.get("admin_token");
+    return c.json({ token: token, ok: true }, 201);
+  } else {
+    return c.json({ error: 'Invalid username or password', ok: false }, 401);
+  }
+});
 
 //parse token
 api.get('/parseToken', async (c) => {
@@ -168,7 +175,7 @@ api.post('/uploadFile', async (c) => {
         },
       });
       console.log(`File uploaded successfully: ${key}`);
-      imageUrl = `https://pub-a4f4e5ec65f24061956b560179a5a794.r2.dev/${key}`;
+      imageUrl = `${R2_URL}${key}`;;
     }
     return c.json({ msg:"File uploaded successfully", ok: true })
   })
