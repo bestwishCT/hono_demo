@@ -9,6 +9,7 @@ import { updateEmployee, findAllEmployees,createEmployee,deleteEmployee } from '
 import { sign,decode,verify} from 'hono/jwt'
 
 const api = new Hono<{ Bindings: Bindings }>()
+// KV
 api.use('/posts/*', cors())
 
 api.get('/', (c) => {
@@ -60,6 +61,7 @@ api.delete('/posts/:id', async (c) => {
     const success = await model.deletePost(c.env.hono_kv_demo, id)
     return c.json({ ok: success })
 })
+
 //========================d1 CRUD、JWT Auth==================================
 //d1 query
 api.get('/auth/employee', async (c) => {

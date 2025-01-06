@@ -23,11 +23,10 @@ app.notFound((c) => c.json({ message: 'Not Found', ok: false }, 404))
 
 const middleware = new Hono<{ Bindings: Bindings }>()
 middleware.use('*', prettyJSON())
-// 简单鉴权
+// 简单鉴权,现在不用
 // Bearer Auth Middleware
 // middleware.use('/employee/*', bearerAuth({ token }))
-// jwt鉴权
-// 调试暂时去掉
+// jwt鉴权，现在使用（调试暂时去掉）
 // middleware.use('/auth/*',
 //   jwt({
 //     secret: 'mySecretKey',
@@ -44,7 +43,7 @@ const scheduled = {
   
   // Cloudflare Worker 的入口函数
   export default {
-    // 处理所有 HTTP 请求
+    // 处理 HTTP 请求
     async fetch(request: Request, env: Bindings, ctx: ExecutionContext) {
         return app.fetch(request, env, ctx);
     },
@@ -67,6 +66,7 @@ const scheduled = {
               console.log("cron processed 45 minutes ***");
               break;
           }
+          console.log(controller.cron)
           console.log("cron processed");
         },
     };

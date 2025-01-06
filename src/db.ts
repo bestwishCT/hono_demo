@@ -152,3 +152,24 @@ export const deleteSearchEngine = async (db: D1Database, id: string) => {
   const result = await db.prepare(query).bind(id).run();
   return result.success;
 };
+
+export type reportPoint = {
+  body: string;
+  created_date: number;
+};
+
+export const savePoint = async (
+  db: D1Database,
+  engine: reportPoint
+) => {
+  const query = `
+      INSERT INTO point_202501 (body, created_date)
+      VALUES (?, ?)`;
+
+  const results  = await db
+    .prepare(query)
+    .bind(engine.body,engine.created_date)
+    .run();
+  const points = results;
+  return points;
+};

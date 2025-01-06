@@ -20,3 +20,6 @@ database_id = "b0a65a18-20b6-40c4-ac63-89fc44d234b7"
 
 [observability.logs]
 enabled = true
+
+[triggers]
+crons = ["*/1 * * * *","*/10 * * * *","*/45 * * * *"]

@@ -51,3 +51,9 @@ CREATE TABLE search_engine (
     created_date bigint,
     status tinyint
 );
+
+CREATE TABLE point_202501 (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    body text,
+    created_date bigint
+);
