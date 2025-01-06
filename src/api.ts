@@ -7,7 +7,7 @@ import type { FC } from 'hono/jsx'
 import type { Employee } from './db'
 import { updateEmployee, findAllEmployees,createEmployee,deleteEmployee } from './db'
 import { sign,decode,verify} from 'hono/jwt'
-import { R2_URL } from './utils/constants';
+import { R2_URL,JWT_EXPIRATION_TIME  } from './utils/constants';
 
 const api = new Hono<{ Bindings: Bindings }>()
 // KV
@@ -121,7 +121,7 @@ api.post('/login', async (c) => {
     const payload = {
       sub: 'admin',
       role: 'admin',
-      exp: Math.floor(Date.now() / 1000) + 60 * 10, // Token expires in 10 minutes
+      exp: Math.floor(Date.now() / 1000) + 60 * JWT_EXPIRATION_TIME ,
     };
     const secret = 'mySecretKey';
     const token = await sign(payload, secret);
