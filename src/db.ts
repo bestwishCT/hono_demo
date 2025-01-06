@@ -153,6 +153,7 @@ export const deleteSearchEngine = async (db: D1Database, id: string) => {
   return result.success;
 };
 
+// 上报数据
 export type reportPoint = {
   body: string;
   created_date: number;
@@ -172,4 +173,10 @@ export const savePoint = async (
     .run();
   const points = results;
   return points;
+};
+
+export const findPointData = async (db: D1Database) => {
+  const query = `SELECT * FROM point_202501`;
+  const { results } = await db.prepare(query).all();
+  return results;
 };

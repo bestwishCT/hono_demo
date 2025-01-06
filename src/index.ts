@@ -7,6 +7,7 @@ import handler from './handler/handler'
 import { Bindings } from './bindings'
 import { jwt } from 'hono/jwt'
 import { html, raw } from 'hono/html'
+import { findPointData } from './db'
 
 const app = new Hono()
 const token = 'honoiscool'
@@ -15,10 +16,10 @@ app.get('/', (c) => c.redirect('/api/auth/engineList'))
 app.get('/:username', (c) => {
     const { username } = c.req.param()
     return c.html(
-      html`<!doctype html>
+        html`<!doctype html>
         <h1>hono! ${username}!</h1>`
     )
-  })
+})
 app.notFound((c) => c.json({ message: 'Not Found', ok: false }, 404))
 
 const middleware = new Hono<{ Bindings: Bindings }>()
@@ -37,37 +38,43 @@ app.route('/api', handler)
 
 const scheduled = {
     async scheduled(controller: ScheduledController, env: Bindings, ctx: ExecutionContext) {
-      console.log('Cron task executed at', new Date().toISOString());
+        console.log('Cron task executed at', new Date().toISOString());
     }
-  };
-  
-  // Cloudflare Worker 的入口函数
-  export default {
+};
+
+// Cloudflare Worker 的入口函数
+export default {
     // 处理 HTTP 请求
     async fetch(request: Request, env: Bindings, ctx: ExecutionContext) {
         return app.fetch(request, env, ctx);
     },
-  
+
     // 处理定时任务
     async scheduled(controller: ScheduledController, env: Bindings, ctx: ExecutionContext) {
-    //   await scheduled.scheduled(event, env, ctx);
-        // Write code for updating your API
         switch (controller.cron) {
             case "*/1 * * * *":
-              // Every minutes
-              console.log("cron processed 1 minutes ***");
-              break;
+                // Every minutes
+                console.log("cron processed 1 minutes ***");
+                const pointData = await findPointData(env.DB);
+                if (pointData && pointData.length > 0) {
+                    pointData.forEach((point: any) => {
+                        console.log(`Point Body: ${point.body}`);
+                    });
+                } else {
+                    console.log("No points found");
+                }
+                break;
             case "*/10 * * * *":
-              // Every ten minutes
-              console.log("cron processed 10 minutes ***");
-              break;
+                // Every ten minutes
+                console.log("cron processed 10 minutes ***");
+                break;
             case "*/45 * * * *":
-              // Every forty-five minutes
-              console.log("cron processed 45 minutes ***");
-              break;
-          }
-          console.log(controller.cron)
-          console.log("cron processed");
-        },
-    };
+                // Every forty-five minutes
+                console.log("cron processed 45 minutes ***");
+                break;
+        }
+        console.log(controller.cron)
+        console.log("cron processed");
+    },
+};
 // export default app
