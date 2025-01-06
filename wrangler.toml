@@ -17,3 +17,6 @@ id = "ca4b064ef936455db1ba09a9451d9f04"
 binding = "DB"
 database_name = "hono-dev"
 database_id = "b0a65a18-20b6-40c4-ac63-89fc44d234b7"
+
+[observability.logs]
+enabled = true

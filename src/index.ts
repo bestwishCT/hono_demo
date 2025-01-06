@@ -35,4 +35,39 @@ middleware.use('*', prettyJSON())
 app.route('/api', middleware)
 app.route('/api', api)
 app.route('/api', handler)
-export default app
+
+const scheduled = {
+    async scheduled(controller: ScheduledController, env: Bindings, ctx: ExecutionContext) {
+      console.log('Cron task executed at', new Date().toISOString());
+    }
+  };
+  
+  // Cloudflare Worker 的入口函数
+  export default {
+    // 处理所有 HTTP 请求
+    async fetch(request: Request, env: Bindings, ctx: ExecutionContext) {
+        return app.fetch(request, env, ctx);
+    },
+  
+    // 处理定时任务
+    async scheduled(controller: ScheduledController, env: Bindings, ctx: ExecutionContext) {
+    //   await scheduled.scheduled(event, env, ctx);
+        // Write code for updating your API
+        switch (controller.cron) {
+            case "*/1 * * * *":
+              // Every minutes
+              console.log("cron processed 1 minutes ***");
+              break;
+            case "*/10 * * * *":
+              // Every ten minutes
+              console.log("cron processed 10 minutes ***");
+              break;
+            case "*/45 * * * *":
+              // Every forty-five minutes
+              console.log("cron processed 45 minutes ***");
+              break;
+          }
+          console.log("cron processed");
+        },
+    };
+// export default app
