@@ -175,6 +175,7 @@ export const savePoint = async (
   return points;
 };
 
+// 查询上报点位
 export const findPointData = async (db: D1Database) => {
   const query = `SELECT * FROM point_202501`;
   const { results } = await db.prepare(query).all();
