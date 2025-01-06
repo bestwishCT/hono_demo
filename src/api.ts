@@ -8,6 +8,7 @@ import type { Employee } from './db'
 import { updateEmployee, findAllEmployees,createEmployee,deleteEmployee } from './db'
 import { sign,decode,verify} from 'hono/jwt'
 import { R2_URL,JWT_EXPIRATION_TIME  } from './utils/constants';
+import {createResponse} from './utils/response'
 
 const api = new Hono<{ Bindings: Bindings }>()
 // KV
@@ -66,8 +67,8 @@ api.delete('/posts/:id', async (c) => {
 //========================d1 CRUD、JWT Auth==================================
 //d1 query
 api.get('/auth/employee', async (c) => {
-    const locations = await findAllEmployees(c.env.DB)
-    return c.json({ locations: locations, ok: true })
+    const employees = await findAllEmployees(c.env.DB)
+    return c.json(createResponse(200, 'Employee query successfully', employees));
 })
 //d1 add
 api.post('/auth/employee', async (c) => {
